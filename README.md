@@ -41,12 +41,15 @@ class MyMiddleware implements MiddlewareInterface
 Both interfaces are just aliases. It allows your middleware to work with
 currently installed version of `http-interop/http-middleware` library.
 
-### Handler method in 0.5.0
+### Delegate/Handler method
 
-In release 0.5.0 of http-middleware handler method has been changed from
-`process` to `handle`. We want support both, so we deliver helper method
-`Webimpress\HttpMiddlewareCompatibility\Handler::getMethodName()`. Here is an
-example how you can use it in your middleware:
+The method name was changed across the different versions of
+`http-interop/http-middleware`. First the method was called `next` (release
+0.1.1), then `process` (from 0.2 - 0.4.1) and then `handle` (in 0.5.0).
+To accomplish all of them we provide constant
+`Webimpress\HttpMiddlewareCompatibility\HANDLER_METHOD`, which has
+appropriate value depends on used version of http-middleware.
+Here is an example how you can use it in your middleware:
 
 ```php
 <?php
