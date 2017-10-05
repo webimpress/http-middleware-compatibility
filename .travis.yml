@@ -1,0 +1,38 @@
+sudo: false
+
+language: php
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - vendor
+
+env:
+  - HTTP_MIDDLEWARE_VERSION="^0.1.1"
+  - HTTP_MIDDLEWARE_VERSION="^0.2"
+  - HTTP_MIDDLEWARE_VERSION="^0.3"
+  - HTTP_MIDDLEWARE_VERSION="^0.4.1"
+  - HTTP_MIDDLEWARE_VERSION="^0.5"
+  - HTTP_MIDDLEWARE_VERSION="dev-master"
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+
+before_install:
+  - phpenv config-rm xdebug.ini || return 0
+  - travis_retry composer self-update
+
+install:
+  - travis_retry composer require --no-interaction http-interop/http-middleware:$HTTP_MIDDLEWARE_VERSION
+  - travis_retry composer install --no-interaction
+  - if [[ $TRAVIS_PHP_VERSION =~ ^5.6 ]]; then travis_retry composer update --no-interaction --with-dependencies phpunit/phpunit ; fi
+  - stty cols 120 && composer show
+
+script:
+  - composer test
+
+notifications:
+  email: false
