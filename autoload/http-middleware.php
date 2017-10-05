@@ -16,7 +16,11 @@ if (interface_exists(\Interop\Http\Middleware\ServerMiddlewareInterface::class)
         HandlerInterface::class
     );
 
-    define(__NAMESPACE__ . '\HANDLER_METHOD', 'process');
+    if (method_exists(HandlerInterface::class, 'next')) {
+        define(__NAMESPACE__ . '\HANDLER_METHOD', 'next');
+    } else {
+        define(__NAMESPACE__ . '\HANDLER_METHOD', 'process');
+    }
 }
 
 // http-interop/http-middleware 0.4.1

@@ -3,6 +3,8 @@
 namespace WebimpressTest\HttpMiddlewareCompatibility;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Psr\Http\Message\ServerRequestInterface;
 use Webimpress\HttpMiddlewareCompatibility\HandlerInterface;
 
 use const Webimpress\HttpMiddlewareCompatibility\HANDLER_METHOD;
@@ -16,11 +18,10 @@ class HandlerInterfaceTest extends TestCase
 
     public function testHandlerInterfaceIsAliasToBaseLibrary()
     {
-        // 0.3.0
+        // 0.3.0, 0.2.0, 0.1.1
         if (interface_exists(\Interop\Http\Middleware\DelegateInterface::class)) {
             self::assertTrue(is_a(HandlerInterface::class, \Interop\Http\Middleware\DelegateInterface::class, true));
             self::assertTrue(is_a(\Interop\Http\Middleware\DelegateInterface::class, HandlerInterface::class, true));
-            self::assertSame('process', HANDLER_METHOD);
 
             return;
         }
@@ -44,5 +45,14 @@ class HandlerInterfaceTest extends TestCase
         }
 
         self::fail('Unsupported version');
+    }
+
+    public function testHandlerMethodExists()
+    {
+        $request = $this->prophesize(ServerRequestInterface::class);
+        $prophecy = $this->prophesize(HandlerInterface::class);
+        $prophecy->{HANDLER_METHOD}(Argument::any())->shouldBeCalledTimes(1);
+
+        $prophecy->reveal()->{HANDLER_METHOD}($request->reveal());
     }
 }
