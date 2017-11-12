@@ -21,6 +21,7 @@ if (interface_exists(\Interop\Http\Middleware\ServerMiddlewareInterface::class)
     } else {
         define(__NAMESPACE__ . '\HANDLER_METHOD', 'process');
     }
+    define(__NAMESPACE__ . '\HAS_RETURN_TYPE', false);
 }
 
 // http-interop/http-middleware 0.4.1
@@ -38,9 +39,10 @@ if (interface_exists(\Interop\Http\ServerMiddleware\MiddlewareInterface::class)
     );
 
     define(__NAMESPACE__ . '\HANDLER_METHOD', 'process');
+    define(__NAMESPACE__ . '\HAS_RETURN_TYPE', false);
 }
 
-// http-interop/http-middleware 0.5.0
+// http-interop/http-middleware 0.5.0 && http-interop/http-server-middleware 1.0.1
 if (interface_exists(\Interop\Http\Server\MiddlewareInterface::class)
     && interface_exists(\Interop\Http\Server\RequestHandlerInterface::class)
 ) {
@@ -55,4 +57,11 @@ if (interface_exists(\Interop\Http\Server\MiddlewareInterface::class)
     );
 
     define(__NAMESPACE__ . '\HANDLER_METHOD', 'handle');
+
+    if (PHP_VERSION_ID >= 70000) {
+        $r = new \ReflectionMethod(MiddlewareInterface::class, 'process');
+        define(__NAMESPACE__ . '\HAS_RETURN_TYPE', $r->hasReturnType());
+    } else {
+        define(__NAMESPACE__ . '\HAS_RETURN_TYPE', false);
+    }
 }
